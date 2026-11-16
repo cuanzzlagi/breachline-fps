@@ -88,10 +88,13 @@ export const NODES = [
   { x: 6, z: 0, t: 'mid' }, { x: 0, z: 6.5, t: 'mid' }, { x: -1.5, z: -6, t: 'mid' },
   { x: 5.5, z: -6.5, t: 'mid' }, { x: -12, z: -7.5, t: 'lane' }, { x: 12.5, z: -7, t: 'lane' },
   { x: -6, z: -12.5, t: 'lane' }, { x: 6, z: -12.5, t: 'lane' }, { x: -13, z: -11, t: 'siteA' },
-  { x: -21, z: -9.5, t: 'siteA' }, { x: -24, z: -13, t: 'siteA' }, { x: -16.5, z: -17, t: 'siteA' },
+  { x: -22.5, z: -10.5, t: 'siteA' }, { x: -24, z: -13, t: 'siteA' }, { x: -16.5, z: -17, t: 'siteA' },
   { x: 13.5, z: -10.5, t: 'siteB' }, { x: 21, z: -9, t: 'siteB' }, { x: 23.5, z: -13, t: 'siteB' },
   { x: 16.5, z: -17.5, t: 'siteB' }, { x: -4, z: -17, t: 'spawnD' }, { x: 4, z: -17, t: 'spawnD' },
   { x: -11, z: -18.5, t: 'lane' }, { x: 11, z: -18.5, t: 'lane' },
+  // lane links south of the long containers: without them the outer-lane
+  // nodes pair off into islands the graph cannot route out of
+  { x: -16, z: 2.5, t: 'lane' }, { x: 16, z: 2.5, t: 'lane' },
 ];
 
 // Defender hold points and attacker post-plant spots: position + facing yaw.

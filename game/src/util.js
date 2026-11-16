@@ -56,10 +56,12 @@ export function rayAabb(ox, oy, oz, dx, dy, dz, min, max) {
 // Ray against a sphere; returns entry distance or -1.
 export function raySphere(ox, oy, oz, dx, dy, dz, cx, cy, cz, r) {
   const lx = cx - ox, ly = cy - oy, lz = cz - oz;
+  const r2 = r * r;
+  const l2 = lx * lx + ly * ly + lz * lz;
+  if (l2 < r2) return 0; // origin inside the sphere: a point-blank hit
   const tca = lx * dx + ly * dy + lz * dz;
   if (tca < 0) return -1;
-  const d2 = lx * lx + ly * ly + lz * lz - tca * tca;
-  const r2 = r * r;
+  const d2 = l2 - tca * tca;
   if (d2 > r2) return -1;
   return tca - Math.sqrt(r2 - d2);
 }

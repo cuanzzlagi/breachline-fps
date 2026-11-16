@@ -141,9 +141,15 @@ function think(G, c) {
   const charge = G.charge;
   // the plant rewrites everyone's job
   if (charge.planted) {
+    // stale targets end here: tracking a dead or long-lost enemy must not
+    // keep a bot out of its post-plant job
+    if (b.enemy && (!b.enemy.alive || now - b.lastSeenAt > 1.4)) {
+      b.enemy = null;
+      if (b.state === 'engage') b.state = 'deploy';
+    }
     if (c.team === 'def') {
       const d = Math.hypot(c.pos.x - charge.x, c.pos.z - charge.z);
-      const defuser = G.combatants.filter((x) => x.team === 'def' && x.alive)
+      const defuser = G.combatants.filter((x) => x.team === 'def' && x.alive && !x.isPlayer)
         .sort((a, z) => Math.hypot(a.pos.x - charge.x, a.pos.z - charge.z) - Math.hypot(z.pos.x - charge.x, z.pos.z - charge.z))[0];
       if (c === defuser) { b.job = 'defuse'; b.jobPos = { x: charge.x, z: charge.z }; }
       else { b.job = 'cover'; b.jobPos = { x: charge.x + (c.pos.x > charge.x ? 6 : -6), z: charge.z + 5 }; }

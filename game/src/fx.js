@@ -116,6 +116,13 @@ export class FX {
     this.smokes.push({ x, y: 1.5, z, r: 3.3, until: now + duration, born: now, group });
   }
 
+  // Round reset: smoke belongs to the round that threw it, visuals and
+  // vision blockers alike (visionClear reads this same list).
+  clearSmokes() {
+    for (const s of this.smokes) this.scene.remove(s.group);
+    this.smokes.length = 0;
+  }
+
   flashBurst(x, y, z) {
     this.boomSprite.position.set(x, y, z);
     this.boomSprite.material.color.set(0xffffff);

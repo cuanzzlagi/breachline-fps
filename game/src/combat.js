@@ -134,6 +134,7 @@ export function stepGrenades(G, dt) {
     const n = list[i];
     n.fuse -= dt;
     if (!n.rested) {
+      const py = n.y; // pre-step height: tells a roof landing from a side hit
       n.vy -= 16 * dt;
       n.x += n.vx * dt; n.y += n.vy * dt; n.z += n.vz * dt;
       if (n.y < 0.09) {
@@ -142,9 +143,16 @@ export function stepGrenades(G, dt) {
         else { n.rested = true; n.vx = n.vz = 0; n.vy = 0; }
       }
       // cheap box bounce: if the point enters a box footprint below its top,
-      // push it back out along the smaller penetration axis
+      // push it back out along the smaller penetration axis — unless it fell
+      // onto the roof, in which case it lands or bounces on top
       for (const b of G.boxes) {
         if (n.x > b.min.x && n.x < b.max.x && n.z > b.min.z && n.z < b.max.z && n.y < b.max.y) {
+          if (py >= b.max.y - 0.02 && n.vy <= 0) {
+            n.y = b.max.y + 0.09;
+            if (Math.abs(n.vy) > 2) { n.vy = -n.vy * 0.35; n.vx *= 0.7; n.vz *= 0.7; }
+            else { n.rested = true; n.vx = n.vz = 0; n.vy = 0; }
+            continue;
+          }
           const pl = n.x - b.min.x, pr = b.max.x - n.x, pt = n.z - b.min.z, pb = b.max.z - n.z;
           const m = Math.min(pl, pr, pt, pb);
           if (m === pl) { n.x = b.min.x - 0.02; n.vx = -Math.abs(n.vx) * 0.4; }

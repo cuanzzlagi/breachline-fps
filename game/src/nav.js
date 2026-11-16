@@ -3,14 +3,39 @@
 // them is clear, so routes follow the lanes a player would take. Pathfinding
 // is plain A* over that graph; movement then walks the path's corners.
 
-import { NODES, losClear } from './map.js';
+import { NODES, BOXES, losClear } from './map.js';
+
+// A chest-high sight line passes OVER low cover (1.1 m walls, barrels) that
+// still blocks walking, so an edge also has to keep the ground segment clear
+// of those footprints, grown by the combatant radius (0.35) plus a whisker —
+// any fatter and the growth swallows lanes that pass a wall's corner with
+// room to spare, cutting whole areas out of the graph (Liang–Barsky).
+function segCrossesLowCover(ax, az, bx, bz) {
+  for (const b of BOXES) {
+    if ((b.y0 || 0) !== 0 || b.h >= 1.2) continue;
+    const minx = b.min.x - 0.37, maxx = b.max.x + 0.37, minz = b.min.z - 0.37, maxz = b.max.z + 0.37;
+    const dx = bx - ax, dz = bz - az;
+    const p = [-dx, dx, -dz, dz], q = [ax - minx, maxx - ax, az - minz, maxz - az];
+    let t0 = 0, t1 = 1, ok = true;
+    for (let i = 0; i < 4; i++) {
+      if (Math.abs(p[i]) < 1e-9) { if (q[i] < 0) { ok = false; break; } }
+      else {
+        const t = q[i] / p[i];
+        if (p[i] < 0) { if (t > t1) { ok = false; break; } if (t > t0) t0 = t; }
+        else { if (t < t0) { ok = false; break; } if (t < t1) t1 = t; }
+      }
+    }
+    if (ok && t0 <= t1) return true;
+  }
+  return false;
+}
 
 const edges = NODES.map(() => []);
 for (let i = 0; i < NODES.length; i++) {
   for (let j = i + 1; j < NODES.length; j++) {
     const a = NODES[i], b = NODES[j];
     const d = Math.hypot(a.x - b.x, a.z - b.z);
-    if (d <= 11 && losClear(a.x, 1.2, a.z, b.x, 1.2, b.z)) {
+    if (d <= 11 && losClear(a.x, 1.2, a.z, b.x, 1.2, b.z) && !segCrossesLowCover(a.x, a.z, b.x, b.z)) {
       edges[i].push({ to: j, cost: d });
       edges[j].push({ to: i, cost: d });
     }

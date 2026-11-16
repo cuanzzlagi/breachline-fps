@@ -40,6 +40,8 @@ export function startRound(G) {
   G.roundClock = RULES.roundTime;
   G.charge = freshCharge();
   G.noise.length = 0;
+  G.fx.chargeMesh.visible = false; // a planted charge from last round must not linger
+  G.fx.clearSmokes(); // smoke belongs to the round that threw it
   const bySide = { atk: 0, def: 0 };
   for (const c of G.combatants) {
     const idx = bySide[c.team]++;
@@ -48,6 +50,12 @@ export function startRound(G) {
     c.vel.set(0, 0, 0);
     c.yaw = c.team === 'atk' ? 0 : Math.PI; // attackers face north (-z), defenders south
     c.pitch = 0;
+    if (!c.alive) resetLoadout(c); // died last round, whenever it happened: the kit is gone
+    // survivors keep their weapons, but magazines and reserves are refilled
+    for (const slot of ['primary', 'sidearm']) {
+      const g = c.weapons[slot];
+      if (g) { g.mag = g.def.mag; g.reserve = g.def.reserve; }
+    }
     c.hp = 100; c.alive = true; c.crouch = false;
     c.channel = null; c.blindUntil = 0; c.hasCharge = false;
     c.bloom = 0; c.reloadUntil = 0;
@@ -207,6 +215,12 @@ export function stepRounds(G, dt) {
     for (const c of G.combatants) {
       if (c.alive && c.team === 'atk' && Math.hypot(c.pos.x - ch.drop.x, c.pos.z - ch.drop.z) < 1.0) {
         c.hasCharge = true; ch.carrier = c; ch.drop = null;
+        if (c.brain) { // a recovered charge gets carried: retask the picker to the site
+          c.brain.job = 'carry';
+          c.brain.jobPos = { x: G.planSite.x, z: G.planSite.z };
+          c.brain.path = null;
+          if (c.brain.state !== 'engage') c.brain.state = 'deploy';
+        }
         break;
       }
     }
