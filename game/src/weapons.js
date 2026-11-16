@@ -190,6 +190,7 @@ export class Viewmodel {
   constructor(camera) {
     this.group = new THREE.Group();
     this.group.position.set(0.24, -0.22, -0.45);
+    this.group.scale.setScalar(0.85);
     camera.add(this.group);
     this.gun = null; this.gunId = null;
     this.kick = 0; this.bobT = 0; this.ads = 0;
@@ -199,6 +200,7 @@ export class Viewmodel {
     if (this.gun) this.group.remove(this.gun);
     this.gunId = id;
     this.gun = buildGunMesh(id);
+    this.gun.position.z = -0.3; // the stock end of a long gun otherwise sits on the camera plane
     this.gun.traverse((m) => { m.frustumCulled = false; });
     this.group.add(this.gun);
   }

@@ -3,7 +3,8 @@
 // economy payouts and the half-time side swap. It owns G.phase, G.score and
 // G.charge; combat.js reports kills through G.onKill, which lands here.
 
-import { RULES, SITES, SPAWNS } from './config.js';
+import { RULES } from './config.js';
+import { SITES, SPAWNS } from './map.js';
 import { botBuy, planRound } from './bots.js';
 import { damage, gunState } from './combat.js';
 

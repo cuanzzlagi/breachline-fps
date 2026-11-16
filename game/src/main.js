@@ -40,7 +40,7 @@ const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'hi
 renderer.setSize(innerWidth, innerHeight);
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.shadowMap.type = THREE.PCFShadowMap; // 0.187 dropped the Soft variant
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.06;
 renderer.domElement.className = 'webgl';
@@ -140,7 +140,10 @@ function frame() {
   if (shotMode) {
     const firstPerson = shotCamera(G, shotMode, t - bootT, camera);
     if (firstPerson) controller.placeCamera(camera, 0);
+    const shotGun = G.player ? currentGun(G.player) : null;
+    if (shotGun) viewmodel.setGun(shotGun.id);
     viewmodel.group.visible = firstPerson && shotMode !== 'end';
+    viewmodel.update(0.016, false, 0, false);
     G.fx.update(0, G.now); // frozen effects: tracers and flashes hold for the capture
   } else {
     controller.placeCamera(camera, ft);

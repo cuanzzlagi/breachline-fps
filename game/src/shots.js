@@ -33,7 +33,7 @@ export function stageShot(G, name) {
     const gun = player.weapons.primary; gun.mag = 18; gun.reserve = 90;
     player.hp = 72; player.armor = 55; player.money = 3400;
     place(player, -12.5, -4.2, 0.72);
-    place(J[0], -16, -7.6, 2.5); J[0].crouch = false;
+    place(J[0], -18.6, -9.8, 2.5); J[0].crouch = false;
     place(J[1], -5.5, -1.5, 2.9); J[1].hasCharge = true; G.charge.carrier = J[1];
     J[2].alive = false; place(J[2], -10.5, -9.5, 2.2);
     place(J[3], -19, 6.5, 2.8);
@@ -45,9 +45,9 @@ export function stageShot(G, name) {
     G.onKillFeed(J[2], B[1], false);
     G.onKillFeed(B[4], J[0], true);
     // a frozen exchange of fire across the A approach
-    G.fx.tracer(-15.6, 1.35, -7.8, -12.6, 1.1, -12.2);
-    G.fx.tracer(-12.4, 1.3, -12.4, -15.4, 1.42, -8.1);
-    G.fx.muzzle(-15.6, 1.35, -7.8);
+    G.fx.tracer(-18.2, 1.35, -10, -12.6, 1.1, -12.2);
+    G.fx.tracer(-12.4, 1.3, -12.4, -17.9, 1.42, -10.3);
+    G.fx.muzzle(-18.2, 1.35, -10);
     G.fx.impact(-12.6, 1.1, -12.2, 7);
     return;
   }
